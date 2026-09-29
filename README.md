@@ -1,35 +1,86 @@
-# CalcNova - Calculadora Minimalista & Moderna
+# Tarea 2 - Calculadora Web (CalcNova)
 
-CalcNova es una aplicación web de calculadora con diseño minimalista, efectos visuales de desenfoque (glassmorphism), animaciones fluidas y consumo en tiempo real de servicios web mediante la API nativa `fetch`.
+**Datos del Estudiante:**
+- **Nombre:** Adrian Francisco Brito Nelkitts
+- **Matrícula:** 20251150
+- **Asignación:** Tarea 2 - Calculadora Web
 
-## Características
+---
 
-- **Diseño Moderno & Minimalista**: Paleta estética oscura y clara, tipografía Plus Jakarta Sans y efectos sutiles de neón.
-- **Micro-interacciones y Animaciones**:
-  - Efecto de presión y onda en las teclas.
-  - Transiciones suaves entre pestañas y modos.
-  - Notificaciones flotantes tipo Toast para retroalimentación instantánea.
-  - Indicador de estado sincronizado con el Web Service.
-  - Panel lateral deslizable para el historial.
-- **Tres Modos de Operación**:
-  - **Básica**: Operaciones aritméticas estándar, porcentajes, inversión de signo y borrado paso a paso.
-  - **Científica**: Funciones trigonométricas (seno, coseno, tangente), constante Pi (π), constante Euler (e), potencias cuadradas y libres, logaritmos (base 10 y natural), raíz cuadrada, recíproco, valor absoluto, factorial y alternador angular (DEG / RAD).
-  - **Divisas (Web Service)**: Conversor de divisas internacional con tasas en vivo actualizadas al instante mediante `fetch`.
-- **Integración con Servicios Web (`fetch`)**:
-  - **Open Exchange Rates API**: Consulta automática y bajo demanda de tasas cambiarias de divisas globales (USD, EUR, GBP, MXN, COP, ARS, CLP, BRL, JPY, etc.).
-  - **Frankfurter API**: Servicio secundario de respaldo en caso de contingencia.
-  - **MathJS Cloud Engine**: Evaluación y verificación remota de expresiones matemáticas complejas en la nube.
-- **Soporte Completo de Teclado**:
-  - Números del `0` al `9` y punto decimal (`.` o `,`).
-  - Operadores `+`, `-`, `*`, `/`, `^`, `%`.
-  - Cálculo con `Enter` o `=`.
-  - Borrado paso a paso con `Backspace`.
-  - Limpieza total con `Escape`.
-- **Persistencia**: Guarda el historial de cálculos y la preferencia de tema (oscuro/claro) en `localStorage`.
+## Descripción del Proyecto
 
-## Cómo Ejecutar
+CalcNova es una aplicación web de calculadora desarrollada con un enfoque de diseño minimalista, moderno y elegante. Incorpora efectos visuales de desenfoque (*glassmorphism*), animaciones dinámicas con micro-interacciones táctiles, persistencia de datos local y consumo de servicios web en tiempo real mediante la API nativa `fetch`.
 
-No requiere dependencias ni instalación previa. Puedes abrir directamente el archivo `index.html` en cualquier navegador moderno:
+---
 
-1. Haz doble clic en `index.html` o ábrelo desde tu navegador web preferido (Chrome, Edge, Firefox, Safari).
-2. Opcionalmente, puedes servir la carpeta con cualquier servidor estático local (como Live Server en VS Code).
+## Evidencias de Funcionamiento
+
+### 1. Modo Básica (Tema Oscuro)
+Interfaz principal de la calculadora con diseño oscuro, efecto de elevación y cálculo aritmético en ejecución con indicador de sincronización del servicio web.
+
+<p align="center">
+  <img src="capturas/Captura%20de%20pantalla%202026-09-29%20174236.png" alt="Modo Básica - Tema Oscuro" width="750">
+</p>
+
+---
+
+### 2. Modo Científica (Tema Claro)
+Despliegue del teclado científico con funciones trigonométricas (seno, coseno, tangente), alternador angular (DEG / RAD), constantes matemáticas (π, e), potencias, raíces, logaritmos y botón directo de cálculo en la nube (`☁ API`), visualizado en tema claro.
+
+<p align="center">
+  <img src="capturas/Captura%20de%20pantalla%202026-09-29%20174319.png" alt="Modo Científica - Tema Claro" width="750">
+</p>
+
+---
+
+### 3. Modo Divisas - Consumo de Web Services con `fetch`
+Panel de conversión de divisas internacionales en tiempo real. Permite transferir el resultado de una operación aritmética mediante el botón **"Usar Calc"** y calcular la conversión de forma instantánea consultando tasas de cambio en vivo mediante peticiones asíncronas con `fetch`.
+
+<p align="center">
+  <img src="capturas/Captura%20de%20pantalla%202026-09-29%20174358.png" alt="Modo Divisas - Web Service Fetch" width="750">
+</p>
+
+---
+
+## Características Principales
+
+1. **Diseño & Animaciones:**
+   - Estética inspirada en *glassmorphism* con efectos de desenfoque de fondo (*backdrop-filter*).
+   - Animación de rebote táctil en cada tecla y micro-animación `animate-pop` en la pantalla principal.
+   - Indicador de estado sincronizado con pulso luminoso en tiempo real.
+   - Transiciones suaves entre pestañas y soporte para tema oscuro y claro.
+
+2. **Tres Modos de Operación:**
+   - **Básica:** Operaciones elementales (+, −, ×, ÷), cálculo de porcentaje, alternador de signo (±) y borrado paso a paso.
+   - **Científica:** Funciones trigonométricas con modo DEG/RAD, constantes π y e, exponentes cuadrático y libre (xʸ), logaritmos (log, ln), recíproco (1/x), valor absoluto (|x|) y factorial (n!).
+   - **Divisas:** Conversor multidivisa internacional (USD, EUR, GBP, MXN, COP, ARS, CLP, BRL, JPY, CAD, AUD, CHF) conectado a servicios web.
+
+3. **Consumo de Servicios Web (`fetch`):**
+   - **Open Exchange Rates API:** Consulta asíncrona de tipos de cambio internacionales en vivo.
+   - **Frankfurter API:** Servicio de respaldo automático en caso de fallo de red.
+   - **MathJS Cloud Engine:** Evaluación y verificación de expresiones matemáticas en la nube.
+
+4. **Soporte de Teclado & Persistencia:**
+   - Atajos completos de teclado (números, operadores, Enter para calcular, Backspace para borrar y Escape para limpiar).
+   - Historial de cálculos interactivo con panel lateral deslizable y almacenamiento en `localStorage`.
+
+---
+
+## Estructura del Repositorio
+
+- `index.html`: Estructura semántica de la aplicación y modales.
+- `style.css`: Hojas de estilo con variables CSS, animaciones y diseño responsivo.
+- `app.js`: Lógica funcional, gestión del estado, controladores de teclado y peticiones `fetch`.
+- `capturas/`: Directorio con las capturas de pantalla que evidencian el funcionamiento.
+- `README.md`: Documentación completa y presentación de la asignación.
+
+---
+
+## Instrucciones de Ejecución
+
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/Adrixn23/calculadoraWeb.git
+   ```
+2. Abrir el archivo `index.html` en cualquier navegador web moderno (Google Chrome, Microsoft Edge, Mozilla Firefox, Safari).
+3. No requiere dependencias externas ni procesos de compilación.
