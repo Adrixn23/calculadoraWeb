@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Minimalista</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-decorations">
+    <div class="blur-circle circle-1"></div>
+    <div class="blur-circle circle-2"></div>
+  </div>
+
+  <main class="calculator-app">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-title">CalcNova</span>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggle" class="icon-btn" aria-label="Cambiar tema">
+          <svg class="sun-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <button id="historyToggle" class="icon-btn" aria-label="Historial">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <nav class="mode-tabs">
+      <button class="tab-btn active" data-tab="standard">Básica</button>
+      <button class="tab-btn" data-tab="scientific">Científica</button>
+      <button class="tab-btn" data-tab="converter">Divisas (Web)</button>
+    </nav>
+
+    <div class="display-container">
+      <div class="display-meta">
+        <span class="api-status" id="apiStatus">
+          <span class="pulse-indicator"></span>
+          <span id="apiStatusText">Web Service listo</span>
+        </span>
+        <div class="display-controls">
+          <span id="angleModeBadge" class="angle-badge">DEG</span>
+          <button id="copyBtn" class="copy-btn" title="Copiar al portapapeles">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="display-expression" id="displayExpression"></div>
+      <div class="display-main" id="displayMain">0</div>
+    </div>
+
+    <div class="view-container">
+      <div class="keypad-panel active" id="calcKeypad">
+        <div class="scientific-keys" id="scientificKeys">
+          <button class="key func-key" id="angleToggleBtn" data-action="angleToggle">DEG</button>
+          <button class="key func-key" data-action="sin">sin</button>
+          <button class="key func-key" data-action="cos">cos</button>
+          <button class="key func-key" data-action="tan">tan</button>
+          <button class="key func-key" data-action="pi">π</button>
+          <button class="key func-key" data-action="e">e</button>
+          <button class="key func-key" data-action="sqrt">√</button>
+          <button class="key func-key" data-action="pow2">x²</button>
+          <button class="key func-key" data-action="pow">xʸ</button>
+          <button class="key func-key" data-action="log">log</button>
+          <button class="key func-key" data-action="ln">ln</button>
+          <button class="key func-key" data-action="reciprocal">1/x</button>
+          <button class="key func-key api-calc-key" data-action="cloudEval" title="Calcular con Web Service">☁ API</button>
+          <button class="key func-key" data-action="abs">|x|</button>
+          <button class="key func-key" data-action="fact">n!</button>
+        </div>
+
+        <div class="standard-keys">
+          <button class="key action-key" data-action="clear">AC</button>
+          <button class="key action-key" data-action="backspace">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+              <line x1="18" y1="9" x2="12" y2="15"></line>
+              <line x1="12" y1="9" x2="18" y2="15"></line>
+            </svg>
+          </button>
+          <button class="key action-key" data-action="percent">%</button>
+          <button class="key operator-key" data-operator="/">÷</button>
+
+          <button class="key num-key" data-num="7">7</button>
+          <button class="key num-key" data-num="8">8</button>
+          <button class="key num-key" data-num="9">9</button>
+          <button class="key operator-key" data-operator="*">×</button>
+
+          <button class="key num-key" data-num="4">4</button>
+          <button class="key num-key" data-num="5">5</button>
+          <button class="key num-key" data-num="6">6</button>
+          <button class="key operator-key" data-operator="-">−</button>
+
+          <button class="key num-key" data-num="1">1</button>
+          <button class="key num-key" data-num="2">2</button>
+          <button class="key num-key" data-num="3">3</button>
+          <button class="key operator-key" data-operator="+">+</button>
+
+          <button class="key action-key" data-action="negate">±</button>
+          <button class="key num-key" data-num="0">0</button>
+          <button class="key num-key" data-num=".">.</button>
+          <button class="key equals-key" data-action="equals">=</button>
+        </div>
+      </div>
+
+      <div class="converter-panel" id="converterPanel">
+        <div class="converter-card">
+          <div class="converter-row">
+            <label for="currencyAmount">Monto a convertir</label>
+            <div class="input-with-action">
+              <input type="number" id="currencyAmount" placeholder="0" step="any">
+              <button id="useCalcResultBtn" class="pill-btn" title="Cargar resultado de la calculadora">Usar Calc</button>
+            </div>
+          </div>
+
+          <div class="converter-exchange-grid">
+            <div class="converter-col">
+              <label for="fromCurrency">De</label>
+              <div class="select-wrapper">
+                <select id="fromCurrency">
+                  <option value="USD" selected>USD - Dólar EE.UU.</option>
+                  <option value="EUR">EUR - Euro</option>
+                  <option value="GBP">GBP - Libra Esterlina</option>
+                  <option value="MXN">MXN - Peso Mexicano</option>
+                  <option value="COP">COP - Peso Colombiano</option>
+                  <option value="ARS">ARS - Peso Argentino</option>
+                  <option value="CLP">CLP - Peso Chileno</option>
+                  <option value="BRL">BRL - Real Brasileño</option>
+                  <option value="JPY">JPY - Yen Japonés</option>
+                  <option value="CAD">CAD - Dólar Canadiense</option>
+                  <option value="AUD">AUD - Dólar Australiano</option>
+                  <option value="CHF">CHF - Franco Suizo</option>
+                </select>
+              </div>
+            </div>
+
+            <button id="swapCurrenciesBtn" class="swap-btn" aria-label="Invertir monedas">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12M17 20l4-4M17 20l-4-4"/>
+              </svg>
+            </button>
+
+            <div class="converter-col">
+              <label for="toCurrency">A</label>
+              <div class="select-wrapper">
+                <select id="toCurrency">
+                  <option value="USD">USD - Dólar EE.UU.</option>
+                  <option value="EUR" selected>EUR - Euro</option>
+                  <option value="GBP">GBP - Libra Esterlina</option>
+                  <option value="MXN">MXN - Peso Mexicano</option>
+                  <option value="COP">COP - Peso Colombiano</option>
+                  <option value="ARS">ARS - Peso Argentino</option>
+                  <option value="CLP">CLP - Peso Chileno</option>
+                  <option value="BRL">BRL - Real Brasileño</option>
+                  <option value="JPY">JPY - Yen Japonés</option>
+                  <option value="CAD">CAD - Dólar Canadiense</option>
+                  <option value="AUD">AUD - Dólar Australiano</option>
+                  <option value="CHF">CHF - Franco Suizo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="converter-result-box">
+            <span class="converter-caption" id="converterRateCaption">Tasa en vivo vía Web Service</span>
+            <div class="converter-result-value" id="converterResult">0.00 EUR</div>
+            <div class="converter-timestamp" id="converterTimestamp">Última actualización: --:--:--</div>
+          </div>
+
+          <div class="converter-actions">
+            <button id="fetchRatesBtn" class="btn-primary">
+              <svg class="refresh-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+              </svg>
+              <span>Actualizar Tasas (Fetch)</span>
+            </button>
+            <button id="cloudEvalBtn" class="btn-secondary" title="Validar expresión actual en la nube con MathJS API">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+              </svg>
+              <span>Calcular con API Cloud</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="history-drawer" id="historyDrawer">
+      <div class="history-header">
+        <h3>Historial</h3>
+        <div class="history-actions">
+          <button id="clearHistoryBtn" class="icon-btn-small" title="Limpiar historial">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+          <button id="closeHistoryBtn" class="icon-btn-small" title="Cerrar">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Sin cálculos recientes</div>
+      </div>
+    </aside>
+
+    <div class="history-backdrop" id="historyBackdrop"></div>
+    <div class="toast" id="toast"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
