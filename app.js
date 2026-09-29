@@ -3,6 +3,8 @@ const state = {
   previousInput: '',
   operation: null,
   shouldResetInput: false,
+  lastFinishedExpression: '',
+  angleMode: 'DEG',
   history: [],
   rates: {},
   ratesBase: 'USD',
@@ -15,6 +17,7 @@ const displayMain = document.getElementById('displayMain');
 const displayExpression = document.getElementById('displayExpression');
 const apiStatus = document.getElementById('apiStatus');
 const apiStatusText = document.getElementById('apiStatusText');
+const angleModeBadge = document.getElementById('angleModeBadge');
 const copyBtn = document.getElementById('copyBtn');
 const themeToggle = document.getElementById('themeToggle');
 const historyToggle = document.getElementById('historyToggle');
@@ -61,6 +64,8 @@ function updateDisplay() {
   if (state.operation && state.previousInput !== '') {
     const symbol = getOperatorSymbol(state.operation);
     displayExpression.textContent = `${state.previousInput} ${symbol}`;
+  } else if (state.lastFinishedExpression) {
+    displayExpression.textContent = state.lastFinishedExpression;
   } else {
     displayExpression.textContent = '';
   }
@@ -91,6 +96,8 @@ function highlightActiveOperator() {
 }
 
 function handleNumber(num) {
+  state.lastFinishedExpression = '';
+
   if (state.currentInput === 'Error') {
     state.currentInput = '0';
   }
@@ -121,6 +128,8 @@ function handleNumber(num) {
 
 function handleOperator(op) {
   if (state.currentInput === 'Error') return;
+
+  state.lastFinishedExpression = '';
 
   if (state.operation && !state.shouldResetInput) {
     executeCalculation();
@@ -157,6 +166,7 @@ function executeCalculation() {
         state.previousInput = '';
         state.operation = null;
         state.shouldResetInput = true;
+        state.lastFinishedExpression = '';
         updateDisplay();
         showToast('No es posible dividir por cero');
         return;
@@ -175,6 +185,7 @@ function executeCalculation() {
 
   addHistoryEntry(expression, formattedResult);
 
+  state.lastFinishedExpression = `${expression} =`;
   state.currentInput = formattedResult;
   state.previousInput = '';
   state.operation = null;
@@ -199,10 +210,12 @@ function handleAction(action) {
       state.previousInput = '';
       state.operation = null;
       state.shouldResetInput = false;
+      state.lastFinishedExpression = '';
       updateDisplay();
       break;
 
     case 'backspace':
+      state.lastFinishedExpression = '';
       if (state.currentInput === 'Error' || state.shouldResetInput) {
         state.currentInput = '0';
         state.shouldResetInput = false;
@@ -238,7 +251,33 @@ function handleAction(action) {
   }
 }
 
+function toRadians(val) {
+  return state.angleMode === 'DEG' ? (val * Math.PI) / 180 : val;
+}
+
+function factorial(n) {
+  if (n < 0 || n > 170 || !Number.isInteger(n)) return NaN;
+  if (n === 0 || n === 1) return 1;
+  let res = 1;
+  for (let i = 2; i <= n; i++) res *= i;
+  return res;
+}
+
 function handleScientific(action) {
+  if (action === 'angleToggle') {
+    state.angleMode = state.angleMode === 'DEG' ? 'RAD' : 'DEG';
+    angleModeBadge.textContent = state.angleMode;
+    const btn = document.getElementById('angleToggleBtn');
+    if (btn) btn.textContent = state.angleMode;
+    showToast(`Modo angular: ${state.angleMode}`);
+    return;
+  }
+
+  if (action === 'cloudEval') {
+    evaluateWithCloudAPI();
+    return;
+  }
+
   if (state.currentInput === 'Error') return;
   const current = parseFloat(state.currentInput);
   let result = null;
@@ -246,23 +285,28 @@ function handleScientific(action) {
 
   switch (action) {
     case 'sin':
-      result = Math.sin((current * Math.PI) / 180);
-      label = `sin(${current}°)`;
+      result = Math.sin(toRadians(current));
+      label = `sin(${current}${state.angleMode === 'DEG' ? '°' : 'r'})`;
       break;
     case 'cos':
-      result = Math.cos((current * Math.PI) / 180);
-      label = `cos(${current}°)`;
+      result = Math.cos(toRadians(current));
+      label = `cos(${current}${state.angleMode === 'DEG' ? '°' : 'r'})`;
       break;
     case 'tan':
-      if (Math.abs(current % 180) === 90) {
+      if (state.angleMode === 'DEG' && Math.abs(current % 180) === 90) {
         result = NaN;
       } else {
-        result = Math.tan((current * Math.PI) / 180);
+        result = Math.tan(toRadians(current));
       }
-      label = `tan(${current}°)`;
+      label = `tan(${current}${state.angleMode === 'DEG' ? '°' : 'r'})`;
       break;
     case 'pi':
       state.currentInput = Math.PI.toString().slice(0, 11);
+      state.shouldResetInput = false;
+      updateDisplay();
+      return;
+    case 'e':
+      state.currentInput = Math.E.toString().slice(0, 11);
       state.shouldResetInput = false;
       updateDisplay();
       return;
@@ -311,15 +355,20 @@ function handleScientific(action) {
       result = 1 / current;
       label = `1/(${current})`;
       break;
-    case 'openParen':
-    case 'closeParen':
-      showToast('Usa el modo Cloud API para expresiones algebraicas con paréntesis');
-      return;
+    case 'abs':
+      result = Math.abs(current);
+      label = `abs(${current})`;
+      break;
+    case 'fact':
+      result = factorial(current);
+      label = `${current}!`;
+      break;
   }
 
   if (result !== null) {
     const formatted = formatCalcResult(result);
     addHistoryEntry(label, formatted);
+    state.lastFinishedExpression = `${label} =`;
     state.currentInput = formatted;
     state.shouldResetInput = true;
     updateDisplay();
@@ -373,6 +422,7 @@ function renderHistory() {
     el.addEventListener('click', () => {
       state.currentInput = item.result;
       state.shouldResetInput = true;
+      state.lastFinishedExpression = '';
       updateDisplay();
       closeHistoryDrawer();
       showToast('Resultado cargado');
@@ -456,28 +506,37 @@ async function fetchExchangeRates(base = 'USD', force = false) {
   fetchRatesBtn.classList.add('loading');
 
   try {
-    const response = await fetch(`https://open.er-api.com/v6/latest/${base}`);
+    const primaryUrl = `https://open.er-api.com/v6/latest/${base}`;
+    let response = await fetch(primaryUrl);
+
+    if (!response.ok) {
+      const fallbackUrl = `https://api.frankfurter.dev/v1/latest?base=${base}`;
+      response = await fetch(fallbackUrl);
+    }
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
 
     const data = await response.json();
-    if (data.result === 'success') {
-      state.rates = data.rates;
+    const rates = data.rates || {};
+
+    if (rates && Object.keys(rates).length > 0) {
+      state.rates = rates;
       state.ratesBase = base;
       state.lastRatesUpdate = new Date();
 
       apiStatus.classList.remove('syncing');
       apiStatusText.textContent = `Tasas sincronizadas (${base})`;
       converterTimestamp.textContent = `Última actualización: ${state.lastRatesUpdate.toLocaleTimeString()}`;
-      converterRateCaption.textContent = `Tasa en vivo (Base: ${base}) vía Open Exchange API`;
+      converterRateCaption.textContent = `Tasa en vivo (Base: ${base}) vía Web Service`;
 
       convertCurrencies();
       if (force) {
         showToast('Tasas de cambio actualizadas con éxito');
       }
     } else {
-      throw new Error('API response invalid');
+      throw new Error('API rates empty');
     }
   } catch (error) {
     apiStatus.classList.remove('syncing');
@@ -579,6 +638,7 @@ async function evaluateWithCloudAPI() {
     const formatted = formatCalcResult(parseFloat(cloudResult));
 
     addHistoryEntry(`${cleanExpr} (Cloud API)`, formatted);
+    state.lastFinishedExpression = `${cleanExpr} =`;
     state.currentInput = formatted;
     state.previousInput = '';
     state.operation = null;
